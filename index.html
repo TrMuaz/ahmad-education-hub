@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Ahmad Education Hub</title>
+  <meta name="description" content="Personal teaching, planning, and Islamic Studies resource hub.">
+  <meta name="theme-color" content="#176b4d">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Personal Teaching Dashboard</p>
+      <h1>Assalamu alaikum, Ahmad</h1>
+      <p id="todayDate" class="date-text"></p>
+    </div>
+
+    <div class="header-actions">
+      <button id="installButton" class="btn btn-outline hidden">
+        Install app
+      </button>
+      <button id="themeButton" class="btn btn-light" aria-label="Change colour theme">
+        ◐ Theme
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard">
+
+    <section class="welcome-card">
+      <div>
+        <p class="eyebrow">Bismillah</p>
+        <h2>Plan clearly. Teach meaningfully.</h2>
+        <p>
+          Keep your timetable, teaching tasks, notes, and useful tools in one
+          personal space.
+        </p>
+      </div>
+      <div class="quote-box">
+        <span class="arabic">رَبِّ زِدْنِي عِلْمًا</span>
+        <span>“My Lord, increase me in knowledge.”</span>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span class="stat-label">Today's lessons</span>
+        <strong id="lessonCount">0</strong>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-label">Tasks completed</span>
+        <strong id="completedCount">0 / 0</strong>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-label">Current focus</span>
+        <strong>Teach with ihsan</strong>
+      </article>
+    </section>
+
+    <section class="content-grid">
+
+      <article class="panel timetable-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Schedule</p>
+            <h2>Today's timetable</h2>
+          </div>
+          <button id="addLessonButton" class="small-btn">+ Add lesson</button>
+        </div>
+
+        <div id="timetableList" class="timetable-list"></div>
+      </article>
+
+      <article class="panel tasks-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Planning</p>
+            <h2>Teaching tasks</h2>
+          </div>
+        </div>
+
+        <form id="taskForm" class="task-form">
+          <input
+            id="taskInput"
+            type="text"
+            placeholder="Add a task, for example: Print Form 4 worksheet"
+            maxlength="120"
+            required
+          >
+          <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+
+        <div id="taskList" class="task-list"></div>
+      </article>
+
+      <article class="panel notes-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Workspace</p>
+            <h2>Personal notes</h2>
+          </div>
+          <span id="saveStatus" class="save-status">Saved</span>
+        </div>
+
+        <textarea
+          id="notesArea"
+          placeholder="Write lesson ideas, research notes, reminders, or reflection points here..."
+        ></textarea>
+      </article>
+
+      <article class="panel calculator-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Assessment</p>
+            <h2>Marks calculator</h2>
+          </div>
+        </div>
+
+        <div class="calculator-form">
+          <label>
+            Student score
+            <input id="scoreInput" type="number" min="0" placeholder="e.g. 42">
+          </label>
+
+          <label>
+            Total marks
+            <input id="totalInput" type="number" min="1" placeholder="e.g. 50">
+          </label>
+
+          <button id="calculateButton" class="btn btn-primary">Calculate</button>
+        </div>
+
+        <div id="resultBox" class="result-box">
+          Enter a score and total to calculate the percentage and grade.
+        </div>
+      </article>
+
+      <article class="panel links-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Shortcuts</p>
+            <h2>Quick links</h2>
+          </div>
+        </div>
+
+        <div class="quick-links">
+          <a href="https://drive.google.com/" target="_blank" rel="noopener noreferrer">
+            <span>📁</span> Google Drive
+          </a>
+
+          <a href="https://forms.google.com/" target="_blank" rel="noopener noreferrer">
+            <span>📝</span> Google Forms
+          </a>
+
+          <a href="https://www.canva.com/" target="_blank" rel="noopener noreferrer">
+            <span>🎨</span> Canva
+          </a>
+
+          <a href="https://github.com/" target="_blank" rel="noopener noreferrer">
+            <span>💻</span> GitHub
+          </a>
+        </div>
+      </article>
+
+      <article class="panel resources-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Resources</p>
+            <h2>Teaching reminder</h2>
+          </div>
+        </div>
+
+        <p class="resource-text">
+          Begin each lesson with a clear intention, a meaningful learning
+          objective, and an opportunity for every student to participate.
+        </p>
+
+        <ul class="resource-list">
+          <li>What should students know by the end?</li>
+          <li>How will they show their understanding?</li>
+          <li>What support will struggling learners need?</li>
+        </ul>
+      </article>
+
+    </section>
+  </main>
+
+  <div id="lessonModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button id="closeModalButton" class="close-button" aria-label="Close">×</button>
+
+      <p class="eyebrow">New timetable entry</p>
+      <h2>Add a lesson</h2>
+
+      <form id="lessonForm" class="lesson-form">
+        <label>
+          Time
+          <input id="lessonTime" type="text" placeholder="e.g. 8:00–9:00 AM" required>
+        </label>
+
+        <label>
+          Class
+          <input id="lessonClass" type="text" placeholder="e.g. Form 4 Amanah" required>
+        </label>
+
+        <label>
+          Subject / topic
+          <input id="lessonTopic" type="text" placeholder="e.g. Islamic Studies: Akhlak" required>
+        </label>
+
+        <button type="submit" class="btn btn-primary">Save lesson</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>Ahmad Education Hub · Personal PWA Dashboard</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
