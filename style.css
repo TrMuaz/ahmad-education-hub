@@ -373,21 +373,6 @@ textarea:focus {
   font-weight: 700;
 }
 
-.quick-links {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.quick-links a {
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--text);
-  text-decoration: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
 .quick-links a:hover {
   border-color: var(--primary);
   background: var(--primary-light);
@@ -508,5 +493,102 @@ footer {
   .lesson-time {
     min-width: auto;
     width: 100%;
+  }
+}
+
+.quick-links {
+  display: grid;
+  gap: 12px;
+}
+
+.quick-link-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.quick-link-card:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.quick-link-main {
+  display: flex;
+  flex: 1;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.quick-link-icon {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--primary-light);
+  font-size: 1.25rem;
+}
+
+.quick-link-text {
+  display: grid;
+  min-width: 0;
+}
+
+.quick-link-text strong,
+.quick-link-text span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-link-text strong {
+  font-size: 0.93rem;
+}
+
+.quick-link-text span {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.quick-link-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.link-action-button {
+  padding: 7px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 0.9rem;
+}
+
+.link-action-button:hover {
+  color: var(--primary-dark);
+  background: var(--primary-light);
+}
+
+.link-delete-button:hover {
+  color: var(--danger);
+  background: #fff0ef;
+}
+
+@media (max-width: 520px) {
+  .quick-link-card {
+    align-items: flex-start;
+  }
+
+  .quick-link-actions {
+    flex-direction: column;
   }
 }

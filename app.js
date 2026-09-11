@@ -20,6 +20,39 @@ let lessons = JSON.parse(localStorage.getItem("educationHubLessons")) || default
 let tasks = JSON.parse(localStorage.getItem("educationHubTasks")) || [];
 let deferredPrompt = null;
 
+const defaultQuickLinks = [
+  {
+    id: "drive",
+    name: "Google Drive",
+    url: "https://drive.google.com/",
+    icon: "📁"
+  },
+  {
+    id: "forms",
+    name: "Google Forms",
+    url: "https://forms.google.com/",
+    icon: "📝"
+  },
+  {
+    id: "canva",
+    name: "Canva",
+    url: "https://www.canva.com/",
+    icon: "🎨"
+  },
+  {
+    id: "github",
+    name: "GitHub",
+    url: "https://github.com/",
+    icon: "💻"
+  }
+];
+
+let quickLinks =
+  JSON.parse(localStorage.getItem("educationHubQuickLinks")) ||
+  defaultQuickLinks;
+
+let editingLinkId = null;
+
 const timetableList = document.getElementById("timetableList");
 const taskList = document.getElementById("taskList");
 const lessonCount = document.getElementById("lessonCount");
@@ -28,6 +61,13 @@ const notesArea = document.getElementById("notesArea");
 const saveStatus = document.getElementById("saveStatus");
 const installButton = document.getElementById("installButton");
 const lessonModal = document.getElementById("lessonModal");
+const quickLinksList = document.getElementById("quickLinksList");
+const linkModal = document.getElementById("linkModal");
+const linkForm = document.getElementById("linkForm");
+const linkModalTitle = document.getElementById("linkModalTitle");
+const linkNameInput = document.getElementById("linkName");
+const linkUrlInput = document.getElementById("linkUrl");
+const linkIconInput = document.getElementById("linkIcon");
 
 function saveLessons() {
   localStorage.setItem("educationHubLessons", JSON.stringify(lessons));
@@ -145,6 +185,199 @@ function renderTasks() {
     });
   });
 }
+
+function saveQuickLinks() {
+  localStorage.setItem(
+    "educationHubQuickLinks",
+    JSON.stringify(quickLinks)
+  );
+}
+
+function createLinkId() {
+  return `link-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function normaliseUrl(url) {
+  const cleanUrl = url.trim();
+
+  if (
+    cleanUrl.startsWith("https://") ||
+    cleanUrl.startsWith("http://")
+  ) {
+    return cleanUrl;
+  }
+
+  return `https://${cleanUrl}`;
+}
+
+function getShortUrl(url) {
+  try {
+    return new URL(url).hostname.replace("www.", "");
+  } catch {
+    return url;
+  }
+}
+
+function renderQuickLinks() {
+  quickLinksList.innerHTML = "";
+
+  if (quickLinks.length === 0) {
+    quickLinksList.innerHTML = `
+      <p class="resource-text">
+        No shortcuts saved yet. Select “Add link” to create your first one.
+      </p>
+    `;
+    return;
+  }
+
+  quickLinks.forEach((link) => {
+    const linkCard = document.createElement("div");
+    linkCard.className = "quick-link-card";
+
+    linkCard.innerHTML = `
+      <a
+        class="quick-link-main"
+        href="${link.url}"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span class="quick-link-icon">${link.icon || "🔗"}</span>
+
+        <span class="quick-link-text">
+          <strong>${link.name}</strong>
+          <span>${getShortUrl(link.url)}</span>
+        </span>
+      </a>
+
+      <div class="quick-link-actions">
+        <button
+          class="link-action-button edit-link-button"
+          type="button"
+          aria-label="Edit ${link.name}"
+          data-link-id="${link.id}"
+        >
+          ✏
+        </button>
+
+        <button
+          class="link-action-button link-delete-button delete-link-button"
+          type="button"
+          aria-label="Delete ${link.name}"
+          data-link-id="${link.id}"
+        >
+          ×
+        </button>
+      </div>
+    `;
+
+    quickLinksList.appendChild(linkCard);
+  });
+
+  document.querySelectorAll(".edit-link-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      openEditLinkModal(button.dataset.linkId);
+    });
+  });
+
+  document.querySelectorAll(".delete-link-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const linkId = button.dataset.linkId;
+      const selectedLink = quickLinks.find((link) => link.id === linkId);
+
+      if (!selectedLink) return;
+
+      const confirmed = window.confirm(
+        `Delete the link “${selectedLink.name}”?`
+      );
+
+      if (!confirmed) return;
+
+      quickLinks = quickLinks.filter((link) => link.id !== linkId);
+      saveQuickLinks();
+      renderQuickLinks();
+    });
+  });
+}
+
+function openAddLinkModal() {
+  editingLinkId = null;
+  linkModalTitle.textContent = "Add a quick link";
+  linkForm.reset();
+  linkIconInput.value = "🔗";
+  linkModal.classList.remove("hidden");
+  linkNameInput.focus();
+}
+
+function openEditLinkModal(linkId) {
+  const selectedLink = quickLinks.find((link) => link.id === linkId);
+
+  if (!selectedLink) return;
+
+  editingLinkId = linkId;
+  linkModalTitle.textContent = "Edit quick link";
+  linkNameInput.value = selectedLink.name;
+  linkUrlInput.value = selectedLink.url;
+  linkIconInput.value = selectedLink.icon || "🔗";
+
+  linkModal.classList.remove("hidden");
+  linkNameInput.focus();
+}
+
+function closeLinkModal() {
+  linkModal.classList.add("hidden");
+  linkForm.reset();
+  editingLinkId = null;
+}
+
+document.getElementById("addLinkButton").addEventListener("click", () => {
+  openAddLinkModal();
+});
+
+document.getElementById("closeLinkModalButton").addEventListener("click", () => {
+  closeLinkModal();
+});
+
+linkModal.addEventListener("click", (event) => {
+  if (event.target === linkModal) {
+    closeLinkModal();
+  }
+});
+
+linkForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const name = linkNameInput.value.trim();
+  const url = normaliseUrl(linkUrlInput.value);
+  const icon = linkIconInput.value.trim() || "🔗";
+
+  if (!name || !url) return;
+
+  if (editingLinkId) {
+    quickLinks = quickLinks.map((link) => {
+      if (link.id === editingLinkId) {
+        return {
+          ...link,
+          name,
+          url,
+          icon
+        };
+      }
+
+      return link;
+    });
+  } else {
+    quickLinks.unshift({
+      id: createLinkId(),
+      name,
+      url,
+      icon
+    });
+  }
+
+  saveQuickLinks();
+  renderQuickLinks();
+  closeLinkModal();
+});
 
 document.getElementById("taskForm").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -280,3 +513,4 @@ if ("serviceWorker" in navigator) {
 updateDate();
 renderLessons();
 renderTasks();
+renderQuickLinks();
